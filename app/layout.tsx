@@ -16,8 +16,9 @@ export const metadata: Metadata = {
   title: "Actualizacion de datos",
   description: "Sistema de colas para actualizar datos de clientes.",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
+    icon: "/qupos-logo.png",
+    shortcut: "/qupos-logo.png",
+    apple: "/qupos-logo.png",
   },
 };
 
