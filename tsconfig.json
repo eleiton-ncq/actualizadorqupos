@@ -36,6 +36,7 @@
     "dist",
     "examples",
     "worker",
+    "vite.config.ts",
     "db/index.ts"
   ]
 }
