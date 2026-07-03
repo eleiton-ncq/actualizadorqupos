@@ -54,8 +54,8 @@ export function AdminFrame({ children }: { children: React.ReactNode }) {
 
   if (!allowed) {
     return (
-      <main className="min-h-screen bg-[#fff8f2] text-[#201a17]">
-        <div className="mx-auto grid min-h-screen max-w-6xl px-5 py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-10 lg:px-8">
+      <main className="min-h-screen bg-[linear-gradient(135deg,#fff8f2_0%,#f5efe8_48%,#eef6f3_100%)] text-[#201a17]">
+        <div className="grid min-h-screen w-full px-5 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12 lg:px-12 xl:px-16">
           <section className="hidden lg:block">
             <BrandLogo />
             <h1 className="mt-8 max-w-xl text-5xl font-bold leading-tight">
@@ -68,10 +68,10 @@ export function AdminFrame({ children }: { children: React.ReactNode }) {
             <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
               {["Carga", "Asignacion", "Exportacion"].map((item, index) => (
                 <div
-                  className="rounded-lg border border-[#ffd5bd] bg-white p-4 shadow-sm"
+                  className="rounded-lg border border-[#ffd5bd] bg-white/88 p-4 shadow-[0_18px_50px_rgba(72,37,18,0.08)] backdrop-blur"
                   key={item}
                 >
-                  <p className="grid h-8 w-8 place-items-center rounded-md bg-[#f7b231] text-sm font-bold">
+                  <p className="grid h-8 w-8 place-items-center rounded-md bg-[#201a17] text-sm font-bold text-white">
                     {index + 1}
                   </p>
                   <p className="mt-3 text-sm font-bold">{item}</p>
@@ -81,7 +81,7 @@ export function AdminFrame({ children }: { children: React.ReactNode }) {
           </section>
 
           <form
-            className="mx-auto w-full max-w-md rounded-lg border border-[#ffd5bd] bg-white p-6 shadow-[0_24px_80px_rgba(96,47,17,0.12)]"
+            className="mx-auto w-full max-w-md rounded-lg border border-[#ffd5bd] bg-white p-7 shadow-[0_30px_90px_rgba(67,36,19,0.16)]"
             onSubmit={submit}
           >
             <div className="flex items-center justify-between gap-4">
@@ -127,11 +127,16 @@ export function AdminFrame({ children }: { children: React.ReactNode }) {
 
   return (
     <DataProvider>
-      <main className="min-h-screen bg-[#fff8f2] text-[#201a17]">
-        <div className="mx-auto flex max-w-[1500px] gap-0 lg:min-h-screen">
-          <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-[#f1ddcf] bg-[#201a17] p-5 text-white lg:block">
-            <BrandLogo inverted />
-            <nav className="mt-8 space-y-1">
+      <main className="min-h-screen bg-[#f7f1eb] text-[#201a17]">
+        <div className="flex w-full gap-0 lg:min-h-screen">
+          <aside className="sticky top-0 hidden h-screen w-[18.5rem] shrink-0 border-r border-[#32251f] bg-[#201a17] p-5 text-white lg:block">
+            <div className="rounded-lg border border-white/10 bg-white/[0.05] p-4">
+              <BrandLogo inverted />
+              <p className="mt-4 text-xs font-semibold leading-5 text-white/55">
+                Operacion centralizada para asignar, monitorear y cerrar datos.
+              </p>
+            </div>
+            <nav className="mt-6 space-y-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const active = pathname === item.href;
@@ -146,13 +151,19 @@ export function AdminFrame({ children }: { children: React.ReactNode }) {
                     href={item.href}
                     key={item.href}
                   >
-                    <Icon size={18} />
+                    <span
+                      className={`grid h-9 w-9 place-items-center rounded-md ${
+                        active ? "bg-white/15" : "bg-white/[0.07]"
+                      }`}
+                    >
+                      <Icon size={18} />
+                    </span>
                     {item.label}
                   </Link>
                 );
               })}
             </nav>
-            <div className="absolute bottom-5 left-5 right-5 rounded-lg border border-white/10 bg-white/[0.07] p-4">
+            <div className="absolute bottom-5 left-5 right-5 rounded-lg border border-white/10 bg-white/[0.07] p-4 shadow-[0_24px_65px_rgba(0,0,0,0.18)]">
               <p className="text-xs font-bold uppercase text-white/50">
                 Campaña
               </p>
@@ -189,7 +200,20 @@ export function AdminFrame({ children }: { children: React.ReactNode }) {
                 </nav>
               </div>
             </header>
-            <div className="px-5 py-6 lg:px-8 lg:py-8">{children}</div>
+            <div className="border-b border-[#ead8ca] bg-white/75 px-5 py-5 backdrop-blur lg:px-10">
+              <p className="text-xs font-bold uppercase text-[#b13e00]">
+                Centro de control
+              </p>
+              <div className="mt-1 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <h1 className="text-2xl font-bold lg:text-3xl">
+                  Operacion de actualizacion
+                </h1>
+                <p className="text-sm font-semibold text-[#7f6b60]">
+                  Supervision, carga y progreso en tiempo real.
+                </p>
+              </div>
+            </div>
+            <div className="px-5 py-7 lg:px-10 lg:py-10">{children}</div>
           </div>
         </div>
       </main>

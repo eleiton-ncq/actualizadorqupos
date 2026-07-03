@@ -76,8 +76,8 @@ function WorkQueue() {
 
   if (loading) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#fff8f2] px-5">
-        <Card className="p-6">
+      <main className="grid min-h-screen place-items-center bg-[linear-gradient(135deg,#fff8f2_0%,#f5efe8_55%,#eef6f3_100%)] px-5">
+        <Card className="p-7 shadow-[0_30px_90px_rgba(67,36,19,0.14)]">
           <BrandLogo />
           <p className="mt-4 text-sm text-[#756b66]">Cargando cola...</p>
         </Card>
@@ -87,8 +87,8 @@ function WorkQueue() {
 
   if (!worker) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#fff8f2] px-5 text-[#231f20]">
-        <Card className="w-full max-w-md p-6 text-center">
+      <main className="grid min-h-screen place-items-center bg-[linear-gradient(135deg,#fff8f2_0%,#f5efe8_55%,#eef6f3_100%)] px-5 py-12 text-[#231f20]">
+        <Card className="w-full max-w-md p-7 text-center shadow-[0_30px_90px_rgba(67,36,19,0.14)]">
           <div className="mb-5 flex justify-center">
             <BrandLogo compact />
           </div>
@@ -103,8 +103,8 @@ function WorkQueue() {
 
   if (!currentClient) {
     return (
-      <main className="grid min-h-screen place-items-center bg-[#fff8f2] px-5 text-[#231f20]">
-        <Card className="w-full max-w-md p-6 text-center">
+      <main className="grid min-h-screen place-items-center bg-[linear-gradient(135deg,#fff8f2_0%,#f5efe8_55%,#eef6f3_100%)] px-5 py-12 text-[#231f20]">
+        <Card className="w-full max-w-md p-7 text-center shadow-[0_30px_90px_rgba(67,36,19,0.14)]">
           <div className="mb-5 flex justify-center">
             <BrandLogo compact />
           </div>
@@ -122,18 +122,18 @@ function WorkQueue() {
   }
 
   return (
-    <main className="min-h-screen bg-[#fff8f2] px-5 py-5 text-[#231f20] lg:px-8">
-      <div className="mx-auto max-w-6xl">
-        <header className="mb-5 overflow-hidden rounded-lg border border-[#f1ddcf] bg-white shadow-[0_18px_55px_rgba(77,39,17,0.07)]">
-          <div className="grid gap-0 lg:grid-cols-[1fr_360px]">
-            <div className="p-5">
+    <main className="min-h-screen bg-[linear-gradient(135deg,#fff8f2_0%,#f5efe8_52%,#eef6f3_100%)] px-5 py-12 text-[#231f20] sm:py-16 lg:px-10 lg:py-20">
+      <div className="mx-auto w-full max-w-[1380px]">
+        <header className="mb-6 overflow-hidden rounded-lg border border-[#ead8ca] bg-white shadow-[0_28px_85px_rgba(77,39,17,0.12)]">
+          <div className="grid gap-0 lg:grid-cols-[1fr_390px]">
+            <div className="p-6 lg:p-7">
               <BrandLogo />
-              <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase text-[#b54200]">
                     Cola de trabajo
                   </p>
-                  <h1 className="text-3xl font-bold">{worker.name}</h1>
+                  <h1 className="mt-1 text-4xl font-bold">{worker.name}</h1>
                 </div>
                 <Pill tone="brand">
                   {currentClient.status === "in_progress"
@@ -142,12 +142,12 @@ function WorkQueue() {
                 </Pill>
               </div>
             </div>
-            <div className="bg-[#201a17] p-5 text-white">
+            <div className="bg-[#201a17] p-6 text-white lg:p-7">
               <p className="text-xs font-bold uppercase text-white/[0.55]">
                 Tu avance
               </p>
               <div className="mt-3 flex items-end justify-between gap-4">
-                <p className="text-4xl font-bold">{workerPercent}%</p>
+                <p className="text-6xl font-bold">{workerPercent}%</p>
                 <p className="text-sm font-semibold text-white/[0.65]">
                   {completedClients.length}/{assignedClients.length} listos
                 </p>
@@ -162,12 +162,12 @@ function WorkQueue() {
           </div>
         </header>
 
-        <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-          <Card className="p-5">
+        <section className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]">
+          <Card className="p-6 shadow-[0_24px_75px_rgba(77,39,17,0.1)] lg:p-7">
             <p className="text-xs font-semibold uppercase text-[#b54200]">
               Cliente actual
             </p>
-            <h2 className="mt-2 text-2xl font-semibold">
+            <h2 className="mt-2 text-3xl font-bold">
               {currentClient.client_name}
             </h2>
             <p className="mt-2 text-sm leading-6 text-[#756b66]">
@@ -277,7 +277,7 @@ function ClientForm({
 
   return (
     <form
-      className="rounded-lg border border-[#f1ddcf] bg-white p-5 shadow-[0_18px_55px_rgba(77,39,17,0.07)]"
+      className="rounded-lg border border-[#ead8ca] bg-white p-6 shadow-[0_28px_85px_rgba(77,39,17,0.12)] lg:p-7"
       onSubmit={submit}
     >
       <div className="flex items-start justify-between gap-4">
@@ -286,17 +286,17 @@ function ClientForm({
             <ClipboardCheck size={15} />
             Captura
           </p>
-          <h2 className="mt-1 text-2xl font-bold">Actualizar datos</h2>
+          <h2 className="mt-1 text-3xl font-bold">Actualizar datos</h2>
           <p className="mt-1 text-sm leading-6 text-[#7f6b60]">
             Completa los campos confirmados. Puedes dejar observaciones para el
             equipo administrativo.
           </p>
         </div>
-        <span className="rounded-full bg-[#fff0dc] px-3 py-1 text-xs font-semibold text-[#8f3900]">
+        <span className="shrink-0 rounded-full bg-[#fff0dc] px-3 py-1 text-xs font-semibold text-[#8f3900]">
           5 campos
         </span>
       </div>
-      <div className="mt-4 grid gap-4">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <Input
           label="Telefono actualizado"
           onChange={(value) =>
@@ -312,6 +312,8 @@ function ClientForm({
           type="email"
           value={form.updated_email}
         />
+      </div>
+      <div className="mt-4 grid gap-4">
         <Input
           label="Direccion actualizada"
           onChange={(value) =>
@@ -332,7 +334,7 @@ function ClientForm({
         <label className="text-sm font-medium">
           <span className="font-bold text-[#3c302a]">Observaciones</span>
           <textarea
-            className="mt-1 min-h-28 w-full rounded-md border border-[#f3c27b] bg-[#fffdfb] px-3 py-3 outline-none transition focus:border-[#fd5b00] focus:ring-4 focus:ring-[#fd5b00]/10"
+            className="mt-1 min-h-28 w-full rounded-md border border-[#efc49a] bg-[#fffdfb] px-3 py-3 outline-none transition focus:border-[#fd5b00] focus:ring-4 focus:ring-[#fd5b00]/10"
             onChange={(event) =>
               setForm((current) => ({
                 ...current,
@@ -360,8 +362,10 @@ function Field({
   value: string;
 }) {
   return (
-    <div className="flex gap-3 rounded-md border border-[#f5e4d8] bg-[#fffaf6] p-3">
-      <dt className="mt-0.5 text-[#fd5b00]">{icon}</dt>
+    <div className="flex gap-3 rounded-md border border-[#f1dfd1] bg-[#fffaf6] p-3.5">
+      <dt className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-white text-[#fd5b00] shadow-sm">
+        {icon}
+      </dt>
       <dd className="min-w-0">
         <p className="text-xs font-bold uppercase text-[#a56a42]">{label}</p>
         <p className="mt-1 break-words font-semibold">{value}</p>
@@ -385,7 +389,7 @@ function Input({
     <label className="text-sm font-medium">
       <span className="font-bold text-[#3c302a]">{label}</span>
       <input
-        className="mt-1 w-full rounded-md border border-[#f3c27b] bg-[#fffdfb] px-3 py-3 outline-none transition focus:border-[#fd5b00] focus:ring-4 focus:ring-[#fd5b00]/10"
+        className="mt-1 w-full rounded-md border border-[#efc49a] bg-[#fffdfb] px-3 py-3 outline-none transition focus:border-[#fd5b00] focus:ring-4 focus:ring-[#fd5b00]/10"
         onChange={(event) => onChange(event.target.value)}
         type={type}
         value={value}
