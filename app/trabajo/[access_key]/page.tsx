@@ -19,12 +19,44 @@ import { DataProvider, useDataStore } from "@/lib/data-store";
 import type { ClientRecord } from "@/lib/types";
 
 type FormState = {
-  updated_phone: string;
-  updated_email: string;
-  updated_address: string;
-  updated_contact_name: string;
+  updated_main_contact_name: string;
+  updated_main_contact_phone: string;
+  updated_main_contact_email: string;
+  updated_billing_contact_name: string;
+  updated_billing_contact_phone: string;
+  updated_billing_contact_email: string;
+  updated_support_contact_name: string;
+  updated_support_contact_phone: string;
+  updated_support_contact_email: string;
+  updated_address_province: string;
+  updated_address_canton: string;
+  updated_address_district: string;
+  updated_address_details: string;
   observations: string;
 };
+
+type LocationOption = {
+  id: string;
+  name: string;
+};
+
+type LocationResponse = Record<string, string>;
+
+const locationsApiBase = "https://ubicaciones.paginasweb.cr";
+
+function toLocationOptions(data: LocationResponse): LocationOption[] {
+  return Object.entries(data).map(([id, name]) => ({ id, name }));
+}
+
+async function fetchLocationOptions(path: string) {
+  const response = await fetch(`${locationsApiBase}${path}`);
+
+  if (!response.ok) {
+    throw new Error("No se pudieron cargar las ubicaciones.");
+  }
+
+  return toLocationOptions((await response.json()) as LocationResponse);
+}
 
 export default function WorkPage() {
   return (
@@ -255,23 +287,175 @@ function ClientForm({
       | "updated_email"
       | "updated_address"
       | "updated_contact_name"
+      | "updated_main_contact_name"
+      | "updated_main_contact_phone"
+      | "updated_main_contact_email"
+      | "updated_billing_contact_name"
+      | "updated_billing_contact_phone"
+      | "updated_billing_contact_email"
+      | "updated_support_contact_name"
+      | "updated_support_contact_phone"
+      | "updated_support_contact_email"
+      | "updated_address_province"
+      | "updated_address_canton"
+      | "updated_address_district"
+      | "updated_address_details"
       | "observations"
     >,
   ) => Promise<void>;
 }) {
   const [form, setForm] = useState<FormState>({
-    updated_phone: client.updated_phone ?? "",
-    updated_email: client.updated_email ?? "",
-    updated_address: client.updated_address ?? "",
-    updated_contact_name: client.updated_contact_name ?? "",
+    updated_main_contact_name:
+      client.updated_main_contact_name ?? client.updated_contact_name ?? "",
+    updated_main_contact_phone:
+      client.updated_main_contact_phone ?? client.updated_phone ?? "",
+    updated_main_contact_email:
+      client.updated_main_contact_email ?? client.updated_email ?? "",
+    updated_billing_contact_name: client.updated_billing_contact_name ?? "",
+    updated_billing_contact_phone: client.updated_billing_contact_phone ?? "",
+    updated_billing_contact_email: client.updated_billing_contact_email ?? "",
+    updated_support_contact_name: client.updated_support_contact_name ?? "",
+    updated_support_contact_phone: client.updated_support_contact_phone ?? "",
+    updated_support_contact_email: client.updated_support_contact_email ?? "",
+    updated_address_province: client.updated_address_province ?? "",
+    updated_address_canton: client.updated_address_canton ?? "",
+    updated_address_district: client.updated_address_district ?? "",
+    updated_address_details:
+      client.updated_address_details ?? client.updated_address ?? "",
     observations: client.observations ?? "",
   });
   const [saving, setSaving] = useState(false);
+  const [provinces, setProvinces] = useState<LocationOption[]>([]);
+  const [cantons, setCantons] = useState<LocationOption[]>([]);
+  const [districts, setDistricts] = useState<LocationOption[]>([]);
+  const [loadingLocations, setLoadingLocations] = useState(false);
+  const [locationsError, setLocationsError] = useState("");
+  const selectedProvince = provinces.find(
+    (province) => province.name === form.updated_address_province,
+  );
+  const selectedCanton = cantons.find(
+    (canton) => canton.name === form.updated_address_canton,
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    setLoadingLocations(true);
+    setLocationsError("");
+
+    fetchLocationOptions("/provincias.json")
+      .then((options) => {
+        if (mounted) setProvinces(options);
+      })
+      .catch((reason: unknown) => {
+        if (!mounted) return;
+        setLocationsError(
+          reason instanceof Error
+            ? reason.message
+            : "No se pudieron cargar las ubicaciones.",
+        );
+      })
+      .finally(() => {
+        if (mounted) setLoadingLocations(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (!selectedProvince) {
+      setCantons([]);
+      setDistricts([]);
+      return () => {
+        mounted = false;
+      };
+    }
+
+    setLoadingLocations(true);
+    setLocationsError("");
+    setCantons([]);
+    setDistricts([]);
+
+    fetchLocationOptions(`/provincia/${selectedProvince.id}/cantones.json`)
+      .then((options) => {
+        if (mounted) setCantons(options);
+      })
+      .catch((reason: unknown) => {
+        if (!mounted) return;
+        setLocationsError(
+          reason instanceof Error
+            ? reason.message
+            : "No se pudieron cargar los cantones.",
+        );
+      })
+      .finally(() => {
+        if (mounted) setLoadingLocations(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    if (!selectedProvince || !selectedCanton) {
+      setDistricts([]);
+      return () => {
+        mounted = false;
+      };
+    }
+
+    setLoadingLocations(true);
+    setLocationsError("");
+    setDistricts([]);
+
+    fetchLocationOptions(
+      `/provincia/${selectedProvince.id}/canton/${selectedCanton.id}/distritos.json`,
+    )
+      .then((options) => {
+        if (mounted) setDistricts(options);
+      })
+      .catch((reason: unknown) => {
+        if (!mounted) return;
+        setLocationsError(
+          reason instanceof Error
+            ? reason.message
+            : "No se pudieron cargar los distritos.",
+        );
+      })
+      .finally(() => {
+        if (mounted) setLoadingLocations(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedProvince, selectedCanton]);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaving(true);
-    await completeClient(client.id, form);
+    const updatedAddress = [
+      form.updated_address_province,
+      form.updated_address_canton,
+      form.updated_address_district,
+      form.updated_address_details,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
+    await completeClient(client.id, {
+      ...form,
+      updated_contact_name: form.updated_main_contact_name,
+      updated_phone: form.updated_main_contact_phone,
+      updated_email: form.updated_main_contact_email,
+      updated_address: updatedAddress,
+    });
     setSaving(false);
   }
 
@@ -293,44 +477,154 @@ function ClientForm({
           </p>
         </div>
         <span className="shrink-0 rounded-full bg-[#fff0dc] px-3 py-1 text-xs font-semibold text-[#8f3900]">
-          5 campos
+          13 campos
         </span>
       </div>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <Input
-          label="Telefono actualizado"
-          onChange={(value) =>
-            setForm((current) => ({ ...current, updated_phone: value }))
-          }
-          value={form.updated_phone}
-        />
-        <Input
-          label="Correo actualizado"
-          onChange={(value) =>
-            setForm((current) => ({ ...current, updated_email: value }))
-          }
-          type="email"
-          value={form.updated_email}
-        />
-      </div>
-      <div className="mt-4 grid gap-4">
-        <Input
-          label="Direccion actualizada"
-          onChange={(value) =>
-            setForm((current) => ({ ...current, updated_address: value }))
-          }
-          value={form.updated_address}
-        />
-        <Input
-          label="Nombre de contacto actualizado"
-          onChange={(value) =>
+      <div className="mt-5 space-y-5">
+        <ContactFields
+          email={form.updated_main_contact_email}
+          name={form.updated_main_contact_name}
+          onEmailChange={(value) =>
             setForm((current) => ({
               ...current,
-              updated_contact_name: value,
+              updated_main_contact_email: value,
             }))
           }
-          value={form.updated_contact_name}
+          onNameChange={(value) =>
+            setForm((current) => ({
+              ...current,
+              updated_main_contact_name: value,
+            }))
+          }
+          onPhoneChange={(value) =>
+            setForm((current) => ({
+              ...current,
+              updated_main_contact_phone: value,
+            }))
+          }
+          phone={form.updated_main_contact_phone}
+          title="Contacto principal"
         />
+
+        <ContactFields
+          email={form.updated_billing_contact_email}
+          name={form.updated_billing_contact_name}
+          onEmailChange={(value) =>
+            setForm((current) => ({
+              ...current,
+              updated_billing_contact_email: value,
+            }))
+          }
+          onNameChange={(value) =>
+            setForm((current) => ({
+              ...current,
+              updated_billing_contact_name: value,
+            }))
+          }
+          onPhoneChange={(value) =>
+            setForm((current) => ({
+              ...current,
+              updated_billing_contact_phone: value,
+            }))
+          }
+          phone={form.updated_billing_contact_phone}
+          title="Contacto de cobros"
+        />
+
+        <ContactFields
+          email={form.updated_support_contact_email}
+          name={form.updated_support_contact_name}
+          onEmailChange={(value) =>
+            setForm((current) => ({
+              ...current,
+              updated_support_contact_email: value,
+            }))
+          }
+          onNameChange={(value) =>
+            setForm((current) => ({
+              ...current,
+              updated_support_contact_name: value,
+            }))
+          }
+          onPhoneChange={(value) =>
+            setForm((current) => ({
+              ...current,
+              updated_support_contact_phone: value,
+            }))
+          }
+          phone={form.updated_support_contact_phone}
+          title="Servicio al cliente"
+        />
+
+        <fieldset className="rounded-lg border border-[#f1dfd1] bg-[#fffaf6] p-4">
+          <legend className="px-1 text-sm font-bold text-[#b54200]">
+            Direccion actualizada
+          </legend>
+          <div className="mt-2 grid gap-4 sm:grid-cols-3">
+            <SelectInput
+              label="Provincia"
+              onChange={(value) =>
+                setForm((current) => ({
+                  ...current,
+                  updated_address_province: value,
+                  updated_address_canton: "",
+                  updated_address_district: "",
+                }))
+              }
+              options={provinces}
+              value={form.updated_address_province}
+            />
+            <SelectInput
+              disabled={!selectedProvince || loadingLocations}
+              label="Canton"
+              onChange={(value) =>
+                setForm((current) => ({
+                  ...current,
+                  updated_address_canton: value,
+                  updated_address_district: "",
+                }))
+              }
+              options={cantons}
+              value={form.updated_address_canton}
+            />
+            <SelectInput
+              disabled={!selectedCanton || loadingLocations}
+              label="Distrito"
+              onChange={(value) =>
+                setForm((current) => ({
+                  ...current,
+                  updated_address_district: value,
+                }))
+              }
+              options={districts}
+              value={form.updated_address_district}
+            />
+          </div>
+          {loadingLocations ? (
+            <p className="mt-3 text-xs font-semibold text-[#9a7b68]">
+              Cargando ubicaciones...
+            </p>
+          ) : null}
+          {locationsError ? (
+            <p className="mt-3 rounded-md bg-[#fff1e7] px-3 py-2 text-xs font-bold text-[#b13e00]">
+              {locationsError}
+            </p>
+          ) : null}
+          <label className="mt-4 block text-sm font-medium">
+            <span className="font-bold text-[#3c302a]">Otras señas</span>
+            <textarea
+              className="mt-1 min-h-24 w-full rounded-md border border-[#efc49a] bg-[#fffdfb] px-3 py-3 outline-none transition focus:border-[#fd5b00] focus:ring-4 focus:ring-[#fd5b00]/10"
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  updated_address_details: event.target.value,
+                }))
+              }
+              value={form.updated_address_details}
+            />
+          </label>
+        </fieldset>
+
         <label className="text-sm font-medium">
           <span className="font-bold text-[#3c302a]">Observaciones</span>
           <textarea
@@ -395,5 +689,74 @@ function Input({
         value={value}
       />
     </label>
+  );
+}
+
+function SelectInput({
+  label,
+  value,
+  options,
+  onChange,
+  disabled = false,
+}: {
+  label: string;
+  value: string;
+  options: LocationOption[];
+  onChange: (value: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <label className="text-sm font-medium">
+      <span className="font-bold text-[#3c302a]">{label}</span>
+      <select
+        className="mt-1 w-full rounded-md border border-[#efc49a] bg-[#fffdfb] px-3 py-3 outline-none transition focus:border-[#fd5b00] focus:ring-4 focus:ring-[#fd5b00]/10 disabled:cursor-not-allowed disabled:bg-[#f5eee8] disabled:text-[#9a7b68]"
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+        value={value}
+      >
+        <option value="">Selecciona</option>
+        {options.map((option) => (
+          <option key={option.id} value={option.name}>
+            {option.name}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
+function ContactFields({
+  title,
+  name,
+  phone,
+  email,
+  onNameChange,
+  onPhoneChange,
+  onEmailChange,
+}: {
+  title: string;
+  name: string;
+  phone: string;
+  email: string;
+  onNameChange: (value: string) => void;
+  onPhoneChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
+}) {
+  return (
+    <fieldset className="rounded-lg border border-[#f1dfd1] bg-[#fffaf6] p-4">
+      <legend className="px-1 text-sm font-bold text-[#b54200]">
+        {title}
+      </legend>
+      <div className="mt-2 grid gap-4 sm:grid-cols-3">
+        <Input label="Nombre" onChange={onNameChange} value={name} />
+        <Input label="Numero" onChange={onPhoneChange} value={phone} />
+        <Input
+          label="Correo"
+          onChange={onEmailChange}
+          type="email"
+          value={email}
+        />
+      </div>
+    </fieldset>
   );
 }

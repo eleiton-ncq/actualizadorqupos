@@ -48,6 +48,23 @@ export default function ProgressPage() {
         correo_actualizado: client.updated_email ?? "",
         direccion_actualizada: client.updated_address ?? "",
         contacto_actualizado: client.updated_contact_name ?? "",
+        contacto_principal_nombre:
+          client.updated_main_contact_name ?? client.updated_contact_name ?? "",
+        contacto_principal_numero:
+          client.updated_main_contact_phone ?? client.updated_phone ?? "",
+        contacto_principal_correo:
+          client.updated_main_contact_email ?? client.updated_email ?? "",
+        contacto_cobros_nombre: client.updated_billing_contact_name ?? "",
+        contacto_cobros_numero: client.updated_billing_contact_phone ?? "",
+        contacto_cobros_correo: client.updated_billing_contact_email ?? "",
+        contacto_servicio_nombre: client.updated_support_contact_name ?? "",
+        contacto_servicio_numero: client.updated_support_contact_phone ?? "",
+        contacto_servicio_correo: client.updated_support_contact_email ?? "",
+        provincia_actualizada: client.updated_address_province ?? "",
+        canton_actualizado: client.updated_address_canton ?? "",
+        distrito_actualizado: client.updated_address_district ?? "",
+        otras_senas_actualizadas:
+          client.updated_address_details ?? client.updated_address ?? "",
         observaciones: client.observations ?? "",
         estado: client.status,
         usuario_asignado: worker?.name ?? "",

@@ -45,6 +45,19 @@ create table if not exists public.clients (
   updated_email text,
   updated_address text,
   updated_contact_name text,
+  updated_main_contact_name text,
+  updated_main_contact_phone text,
+  updated_main_contact_email text,
+  updated_billing_contact_name text,
+  updated_billing_contact_phone text,
+  updated_billing_contact_email text,
+  updated_support_contact_name text,
+  updated_support_contact_phone text,
+  updated_support_contact_email text,
+  updated_address_province text,
+  updated_address_canton text,
+  updated_address_district text,
+  updated_address_details text,
   observations text,
   status text not null default 'pending'
     check (status in ('pending', 'in_progress', 'completed')),
@@ -78,6 +91,19 @@ alter table public.clients add column if not exists licenses_erp integer;
 alter table public.clients add column if not exists licenses_routes integer;
 alter table public.clients add column if not exists licenses_total integer;
 alter table public.clients add column if not exists source_sheet text;
+alter table public.clients add column if not exists updated_main_contact_name text;
+alter table public.clients add column if not exists updated_main_contact_phone text;
+alter table public.clients add column if not exists updated_main_contact_email text;
+alter table public.clients add column if not exists updated_billing_contact_name text;
+alter table public.clients add column if not exists updated_billing_contact_phone text;
+alter table public.clients add column if not exists updated_billing_contact_email text;
+alter table public.clients add column if not exists updated_support_contact_name text;
+alter table public.clients add column if not exists updated_support_contact_phone text;
+alter table public.clients add column if not exists updated_support_contact_email text;
+alter table public.clients add column if not exists updated_address_province text;
+alter table public.clients add column if not exists updated_address_canton text;
+alter table public.clients add column if not exists updated_address_district text;
+alter table public.clients add column if not exists updated_address_details text;
 
 create or replace function public.set_updated_at()
 returns trigger as $$

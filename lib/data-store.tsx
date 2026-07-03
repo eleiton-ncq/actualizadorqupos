@@ -71,6 +71,19 @@ type DataStore = StoreState & {
       | "updated_email"
       | "updated_address"
       | "updated_contact_name"
+      | "updated_main_contact_name"
+      | "updated_main_contact_phone"
+      | "updated_main_contact_email"
+      | "updated_billing_contact_name"
+      | "updated_billing_contact_phone"
+      | "updated_billing_contact_email"
+      | "updated_support_contact_name"
+      | "updated_support_contact_phone"
+      | "updated_support_contact_email"
+      | "updated_address_province"
+      | "updated_address_canton"
+      | "updated_address_district"
+      | "updated_address_details"
       | "observations"
     >,
   ) => Promise<void>;
@@ -346,6 +359,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         updated_email: null,
         updated_address: null,
         updated_contact_name: null,
+        updated_main_contact_name: null,
+        updated_main_contact_phone: null,
+        updated_main_contact_email: null,
+        updated_billing_contact_name: null,
+        updated_billing_contact_phone: null,
+        updated_billing_contact_email: null,
+        updated_support_contact_name: null,
+        updated_support_contact_phone: null,
+        updated_support_contact_email: null,
+        updated_address_province: null,
+        updated_address_canton: null,
+        updated_address_district: null,
+        updated_address_details: null,
         observations: null,
         status: "pending",
         started_at: null,
