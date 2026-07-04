@@ -329,9 +329,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const changedClients: ClientRecord[] = [];
     const clients = state.clients.map((client) => ({ ...client }));
     for (const client of clients.filter(
-      (item) =>
-        !item.assigned_worker_id &&
-        (item.status === "pending" || item.status === "in_progress"),
+      (item) => !item.assigned_worker_id && item.status === "pending",
     )) {
       const worker = [...activeWorkers].sort(
         (a, b) => (counts.get(a.id) ?? 0) - (counts.get(b.id) ?? 0),
