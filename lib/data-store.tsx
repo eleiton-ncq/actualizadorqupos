@@ -139,6 +139,10 @@ function hasUpdatedData(fields: CompleteClientFields) {
   return updatedDataFields.some((field) => fields[field]?.trim());
 }
 
+function hasObservation(client: Pick<ClientRecord, "observations">) {
+  return Boolean(client.observations?.trim());
+}
+
 async function readInitialState(): Promise<StoreState> {
   if (hasSupabaseConfig) {
     const [campaigns, workers, clients] = await Promise.all([
@@ -329,7 +333,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const changedClients: ClientRecord[] = [];
     const clients = state.clients.map((client) => ({ ...client }));
     for (const client of clients.filter(
-      (item) => item.status === "pending" || item.status === "omitted",
+      (item) =>
+        item.status === "pending" ||
+        (item.status === "omitted" && !hasObservation(item)),
     )) {
       const worker = [...activeWorkers].sort(
         (a, b) => (counts.get(a.id) ?? 0) - (counts.get(b.id) ?? 0),
