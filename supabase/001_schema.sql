@@ -60,7 +60,7 @@ create table if not exists public.clients (
   updated_address_details text,
   observations text,
   status text not null default 'pending'
-    check (status in ('pending', 'in_progress', 'completed')),
+    check (status in ('pending', 'in_progress', 'completed', 'omitted')),
   started_at timestamptz,
   completed_at timestamptz,
   created_at timestamptz not null default now(),
@@ -104,6 +104,10 @@ alter table public.clients add column if not exists updated_address_province tex
 alter table public.clients add column if not exists updated_address_canton text;
 alter table public.clients add column if not exists updated_address_district text;
 alter table public.clients add column if not exists updated_address_details text;
+
+alter table public.clients drop constraint if exists clients_status_check;
+alter table public.clients add constraint clients_status_check
+  check (status in ('pending', 'in_progress', 'completed', 'omitted'));
 
 create or replace function public.set_updated_at()
 returns trigger as $$

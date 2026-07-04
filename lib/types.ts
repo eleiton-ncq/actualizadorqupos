@@ -1,4 +1,8 @@
-export type ClientStatus = "pending" | "in_progress" | "completed";
+export type ClientStatus =
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "omitted";
 export type CampaignStatus = "draft" | "active" | "closed";
 
 export type UpdateCampaign = {
@@ -71,6 +75,7 @@ export type DashboardStats = {
   pending: number;
   inProgress: number;
   completed: number;
+  omitted: number;
 };
 
 export type WorkerProgress = {

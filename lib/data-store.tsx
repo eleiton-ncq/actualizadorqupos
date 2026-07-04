@@ -20,6 +20,28 @@ import type {
 
 type StoreState = ReturnType<typeof buildDemoData>;
 
+type CompleteClientFields = Pick<
+  ClientRecord,
+  | "updated_phone"
+  | "updated_email"
+  | "updated_address"
+  | "updated_contact_name"
+  | "updated_main_contact_name"
+  | "updated_main_contact_phone"
+  | "updated_main_contact_email"
+  | "updated_billing_contact_name"
+  | "updated_billing_contact_phone"
+  | "updated_billing_contact_email"
+  | "updated_support_contact_name"
+  | "updated_support_contact_phone"
+  | "updated_support_contact_email"
+  | "updated_address_province"
+  | "updated_address_canton"
+  | "updated_address_district"
+  | "updated_address_details"
+  | "observations"
+>;
+
 type NewClientInput = Pick<
   ClientRecord,
   | "client_name"
@@ -63,30 +85,7 @@ type DataStore = StoreState & {
   loadDemoData: () => Promise<void>;
   importClients: (rows: NewClientInput[]) => Promise<void>;
   markInProgress: (clientId: string) => Promise<void>;
-  completeClient: (
-    clientId: string,
-    fields: Pick<
-      ClientRecord,
-      | "updated_phone"
-      | "updated_email"
-      | "updated_address"
-      | "updated_contact_name"
-      | "updated_main_contact_name"
-      | "updated_main_contact_phone"
-      | "updated_main_contact_email"
-      | "updated_billing_contact_name"
-      | "updated_billing_contact_phone"
-      | "updated_billing_contact_email"
-      | "updated_support_contact_name"
-      | "updated_support_contact_phone"
-      | "updated_support_contact_email"
-      | "updated_address_province"
-      | "updated_address_canton"
-      | "updated_address_district"
-      | "updated_address_details"
-      | "observations"
-    >,
-  ) => Promise<void>;
+  completeClient: (clientId: string, fields: CompleteClientFields) => Promise<void>;
 };
 
 const DataContext = createContext<DataStore | null>(null);
@@ -114,6 +113,30 @@ function makeAccessKey(name: string) {
     .slice(0, 24);
 
   return `${slug || "usuario"}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+const updatedDataFields = [
+  "updated_phone",
+  "updated_email",
+  "updated_address",
+  "updated_contact_name",
+  "updated_main_contact_name",
+  "updated_main_contact_phone",
+  "updated_main_contact_email",
+  "updated_billing_contact_name",
+  "updated_billing_contact_phone",
+  "updated_billing_contact_email",
+  "updated_support_contact_name",
+  "updated_support_contact_phone",
+  "updated_support_contact_email",
+  "updated_address_province",
+  "updated_address_canton",
+  "updated_address_district",
+  "updated_address_details",
+] as const satisfies readonly (keyof CompleteClientFields)[];
+
+function hasUpdatedData(fields: CompleteClientFields) {
+  return updatedDataFields.some((field) => fields[field]?.trim());
 }
 
 async function readInitialState(): Promise<StoreState> {
@@ -198,6 +221,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         (client) => client.status === "in_progress",
       ).length,
       completed: state.clients.filter((client) => client.status === "completed")
+        .length,
+      omitted: state.clients.filter((client) => client.status === "omitted")
         .length,
     };
   }, [state.clients]);
@@ -295,18 +320,22 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         state.clients.filter(
           (client) =>
             client.assigned_worker_id === worker.id &&
-            client.status !== "completed",
+            client.status !== "completed" &&
+            client.status !== "omitted",
         ).length,
       ]),
     );
 
     const changedClients: ClientRecord[] = [];
     const clients = state.clients.map((client) => ({ ...client }));
-    for (const client of clients.filter((item) => item.status === "pending")) {
+    for (const client of clients.filter(
+      (item) => item.status === "pending" || item.status === "omitted",
+    )) {
       const worker = [...activeWorkers].sort(
         (a, b) => (counts.get(a.id) ?? 0) - (counts.get(b.id) ?? 0),
       )[0];
       client.assigned_worker_id = worker.id;
+      client.status = "pending";
       client.updated_at = now();
       changedClients.push(client);
       counts.set(worker.id, (counts.get(worker.id) ?? 0) + 1);
@@ -426,14 +455,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const completeClient: DataStore["completeClient"] = useCallback(
     async (clientId, fields) => {
       let changed: ClientRecord | null = null;
+      const nextStatus = hasUpdatedData(fields) ? "completed" : "omitted";
+      const timestamp = now();
       const clients = state.clients.map((client) =>
         client.id === clientId
           ? (changed = {
                 ...client,
                 ...fields,
-                status: "completed" as const,
-                completed_at: now(),
-                updated_at: now(),
+                assigned_worker_id:
+                  nextStatus === "omitted" ? null : client.assigned_worker_id,
+                status: nextStatus,
+                completed_at: nextStatus === "completed" ? timestamp : null,
+                updated_at: timestamp,
               })
           : client,
       );

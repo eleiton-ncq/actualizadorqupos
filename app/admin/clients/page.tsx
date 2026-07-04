@@ -4,16 +4,18 @@ import { EmptyState, Pill, Section } from "@/components/ui";
 import { useDataStore } from "@/lib/data-store";
 import type { ClientStatus } from "@/lib/types";
 
-const statusTone: Record<ClientStatus, "amber" | "blue" | "green"> = {
+const statusTone: Record<ClientStatus, "amber" | "blue" | "green" | "neutral"> = {
   pending: "amber",
   in_progress: "blue",
   completed: "green",
+  omitted: "neutral",
 };
 
 const statusLabel: Record<ClientStatus, string> = {
   pending: "Pendiente",
   in_progress: "En proceso",
   completed: "Completado",
+  omitted: "Omitido",
 };
 
 export default function ClientsPage() {

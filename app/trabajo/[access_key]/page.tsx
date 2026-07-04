@@ -58,6 +58,10 @@ async function fetchLocationOptions(path: string) {
   return toLocationOptions((await response.json()) as LocationResponse);
 }
 
+function scheduleStateUpdate(callback: () => void) {
+  queueMicrotask(callback);
+}
+
 export default function WorkPage() {
   return (
     <DataProvider>
@@ -339,8 +343,11 @@ function ClientForm({
 
   useEffect(() => {
     let mounted = true;
-    setLoadingLocations(true);
-    setLocationsError("");
+    scheduleStateUpdate(() => {
+      if (!mounted) return;
+      setLoadingLocations(true);
+      setLocationsError("");
+    });
 
     fetchLocationOptions("/provincias.json")
       .then((options) => {
@@ -367,17 +374,23 @@ function ClientForm({
     let mounted = true;
 
     if (!selectedProvince) {
-      setCantons([]);
-      setDistricts([]);
+      scheduleStateUpdate(() => {
+        if (!mounted) return;
+        setCantons([]);
+        setDistricts([]);
+      });
       return () => {
         mounted = false;
       };
     }
 
-    setLoadingLocations(true);
-    setLocationsError("");
-    setCantons([]);
-    setDistricts([]);
+    scheduleStateUpdate(() => {
+      if (!mounted) return;
+      setLoadingLocations(true);
+      setLocationsError("");
+      setCantons([]);
+      setDistricts([]);
+    });
 
     fetchLocationOptions(`/provincia/${selectedProvince.id}/cantones.json`)
       .then((options) => {
@@ -404,15 +417,21 @@ function ClientForm({
     let mounted = true;
 
     if (!selectedProvince || !selectedCanton) {
-      setDistricts([]);
+      scheduleStateUpdate(() => {
+        if (!mounted) return;
+        setDistricts([]);
+      });
       return () => {
         mounted = false;
       };
     }
 
-    setLoadingLocations(true);
-    setLocationsError("");
-    setDistricts([]);
+    scheduleStateUpdate(() => {
+      if (!mounted) return;
+      setLoadingLocations(true);
+      setLocationsError("");
+      setDistricts([]);
+    });
 
     fetchLocationOptions(
       `/provincia/${selectedProvince.id}/canton/${selectedCanton.id}/distritos.json`,

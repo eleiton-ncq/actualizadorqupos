@@ -112,11 +112,12 @@ export default function ProgressPage() {
   return (
     <>
       <Section title="Progreso general">
-        <div className="grid gap-3 md:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-5">
           <StatCard label="Total" tone="brand" value={stats.total} />
           <StatCard label="Pendientes" tone="amber" value={stats.pending} />
           <StatCard label="En proceso" tone="blue" value={stats.inProgress} />
           <StatCard label="Completados" tone="green" value={stats.completed} />
+          <StatCard label="Omitidos" tone="neutral" value={stats.omitted} />
         </div>
       </Section>
 

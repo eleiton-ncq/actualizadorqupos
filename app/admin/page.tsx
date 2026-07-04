@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   Clock3,
   Database,
+  FileX2,
   LoaderCircle,
   Shuffle,
   TrendingUp,
@@ -78,7 +79,7 @@ export default function AdminPage() {
         title="Resumen de cola"
         description="Vista ejecutiva del estado actual de los registros."
       >
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-5">
           <StatCard
             icon={<Database size={20} />}
             label="Total de clientes"
@@ -102,6 +103,12 @@ export default function AdminPage() {
             label="Completados"
             tone="green"
             value={stats.completed}
+          />
+          <StatCard
+            icon={<FileX2 size={20} />}
+            label="Omitidos"
+            tone="neutral"
+            value={stats.omitted}
           />
         </div>
       </Section>
